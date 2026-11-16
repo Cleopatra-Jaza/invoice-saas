@@ -17,7 +17,7 @@ export default function OrgSwitcher({
     <select
       value={currentSlug}
       onChange={(e) => router.push(`/${e.target.value}/dashboard`)}
-      className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700"
+      className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-gray-900"
       aria-label="Switch organization"
     >
       {organizations.map((org) => (

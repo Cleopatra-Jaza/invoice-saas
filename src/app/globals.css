@@ -3,15 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #111827;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
 }
 
 body {
@@ -20,8 +18,33 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+@layer base {
+  body {
+    @apply bg-slate-50 text-gray-900;
+  }
+
+  label {
+    @apply text-gray-800;
+  }
+
+  th {
+    @apply text-gray-700;
+  }
+
+  td {
+    @apply text-gray-900;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 }
+

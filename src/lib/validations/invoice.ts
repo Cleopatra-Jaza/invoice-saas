@@ -8,6 +8,7 @@ export const invoiceItemSchema = z.object({
 
 export const invoiceSchema = z.object({
   clientId: z.string().min(1, "Client is required"),
+  projectId: z.string().optional().or(z.literal("")),
   dueDate: z.string().min(1, "Due date is required"),
   currency: z.enum(["GBP", "USD", "EUR"]).default("GBP"),
   taxRate: z.coerce.number().min(0).max(100).default(20),

@@ -53,7 +53,7 @@ export default function SignupForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-700">Name</label>
+        <label className="block text-sm font-medium text-gray-800">Name</label>
         <input
           required
           value={form.name}
@@ -62,7 +62,7 @@ export default function SignupForm() {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">Email</label>
+        <label className="block text-sm font-medium text-gray-800">Email</label>
         <input
           type="email"
           required
@@ -72,7 +72,7 @@ export default function SignupForm() {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">Password</label>
+        <label className="block text-sm font-medium text-gray-800">Password</label>
         <input
           type="password"
           required
@@ -83,7 +83,7 @@ export default function SignupForm() {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">Organization name</label>
+        <label className="block text-sm font-medium text-gray-800">Organization name</label>
         <input
           required
           value={form.organizationName}
@@ -99,7 +99,7 @@ export default function SignupForm() {
       >
         {loading ? "Creating account..." : "Sign up"}
       </button>
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-gray-700">
         Already have an account?{" "}
         <Link href="/login" className="font-medium text-slate-900 underline">
           Log in

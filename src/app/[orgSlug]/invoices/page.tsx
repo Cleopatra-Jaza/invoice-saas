@@ -2,10 +2,11 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireOrg } from "@/lib/session";
 import { formatMoney } from "@/lib/money";
+import { effectiveStatus, syncOverdueInvoices } from "@/lib/invoice-status";
 import type { InvoiceStatus } from "@prisma/client";
 
 const statusStyles: Record<string, string> = {
-  DRAFT: "bg-slate-100 text-slate-700",
+  DRAFT: "bg-slate-100 text-gray-900",
   SENT: "bg-blue-100 text-blue-700",
   PAID: "bg-green-100 text-green-700",
   OVERDUE: "bg-red-100 text-red-700",
@@ -21,16 +22,17 @@ export default async function InvoicesPage({
   searchParams: { q?: string; status?: string };
 }) {
   const { organizationId } = await requireOrg(params.orgSlug);
+  await syncOverdueInvoices(organizationId);
   const q = (searchParams.q || "").trim();
   const statusParam = (searchParams.status || "").trim();
-  const status = allowedStatuses.includes(statusParam as InvoiceStatus)
+  const statusFilter = allowedStatuses.includes(statusParam as InvoiceStatus)
     ? (statusParam as InvoiceStatus)
     : undefined;
 
   const invoices = await prisma.invoice.findMany({
     where: {
       organizationId,
-      ...(status ? { status } : {}),
+      ...(statusFilter ? { status: statusFilter } : {}),
       ...(q ? { number: { contains: q, mode: "insensitive" } } : {}),
     },
     include: { client: { select: { name: true } } },
@@ -57,7 +59,7 @@ export default async function InvoicesPage({
         />
         <select
           name="status"
-          defaultValue={status ?? ""}
+          defaultValue={statusFilter ?? ""}
           className="rounded-md border border-slate-300 px-3 py-2 text-sm"
         >
           <option value="">All statuses</option>
@@ -71,13 +73,13 @@ export default async function InvoicesPage({
         </button>
       </form>
       {invoices.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
+        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-gray-700">
           No invoices found.
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+            <thead className="border-b border-slate-200 bg-slate-50 text-gray-700">
               <tr>
                 <th className="px-4 py-3 font-medium">Number</th>
                 <th className="px-4 py-3 font-medium">Client</th>
@@ -88,29 +90,32 @@ export default async function InvoicesPage({
               </tr>
             </thead>
             <tbody>
-              {invoices.map((inv) => (
-                <tr key={inv.id} className="border-t border-slate-100">
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/${params.orgSlug}/invoices/${inv.id}`}
-                      className="font-medium text-slate-900 hover:underline"
-                    >
-                      {inv.number}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-slate-700">{inv.client.name}</td>
-                  <td className="px-4 py-3 text-slate-700">{inv.issueDate.toISOString().slice(0, 10)}</td>
-                  <td className="px-4 py-3 text-slate-700">{inv.dueDate.toISOString().slice(0, 10)}</td>
-                  <td className="px-4 py-3 text-slate-700">
-                    {formatMoney(inv.total.toString(), inv.currency)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusStyles[inv.status] || ""}`}>
-                      {inv.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {invoices.map((inv) => {
+                const status = effectiveStatus(inv.status, inv.dueDate);
+                return (
+                  <tr key={inv.id} className="border-t border-slate-100">
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/${params.orgSlug}/invoices/${inv.id}`}
+                        className="font-medium text-slate-900 hover:underline"
+                      >
+                        {inv.number}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-gray-900">{inv.client.name}</td>
+                    <td className="px-4 py-3 text-gray-900">{inv.issueDate.toISOString().slice(0, 10)}</td>
+                    <td className="px-4 py-3 text-gray-900">{inv.dueDate.toISOString().slice(0, 10)}</td>
+                    <td className="px-4 py-3 text-gray-900">
+                      {formatMoney(inv.total.toString(), inv.currency)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusStyles[status] || ""}`}>
+                        {status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

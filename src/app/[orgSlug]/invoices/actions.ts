@@ -40,6 +40,15 @@ async function nextInvoiceNumber(
   return `INV-${String(max + 1).padStart(4, "0")}`;
 }
 
+async function assertProject(orgId: string, projectId?: string | null) {
+  if (!projectId) return null;
+  const project = await prisma.project.findFirst({
+    where: { id: projectId, organizationId: orgId },
+    select: { id: true },
+  });
+  return project ? project.id : "invalid";
+}
+
 export async function createInvoice(
   orgSlug: string,
   _prevState: InvoiceFormState,
@@ -63,6 +72,12 @@ export async function createInvoice(
     return { message: "Selected client is invalid." };
   }
 
+  const projectId = data.projectId || null;
+  if (projectId) {
+    const proj = await assertProject(organizationId, projectId);
+    if (proj === "invalid") return { message: "Selected project is invalid." };
+  }
+
   const totals = calcTotals(data.items, data.taxRate);
   const dueDate = new Date(data.dueDate);
   let created = false;
@@ -75,6 +90,7 @@ export async function createInvoice(
           data: {
             organizationId,
             clientId: data.clientId,
+            projectId,
             number,
             status: "DRAFT",
             dueDate,
@@ -148,6 +164,12 @@ export async function updateInvoice(
   });
   if (!client) return { message: "Selected client is invalid." };
 
+  const projectId = data.projectId || null;
+  if (projectId) {
+    const proj = await assertProject(organizationId, projectId);
+    if (proj === "invalid") return { message: "Selected project is invalid." };
+  }
+
   const totals = calcTotals(data.items, data.taxRate);
   const dueDate = new Date(data.dueDate);
 
@@ -156,6 +178,7 @@ export async function updateInvoice(
       where: { id: invoiceId },
       data: {
         clientId: data.clientId,
+        projectId,
         dueDate,
         currency: data.currency,
         subtotal: totals.subtotal,
@@ -198,5 +221,54 @@ export async function deleteInvoice(
 
   await prisma.invoice.deleteMany({ where: { id: invoiceId, organizationId } });
   revalidatePath(`/${orgSlug}/invoices`);
+  return {};
+}
+
+export async function markInvoiceSent(
+  orgSlug: string,
+  invoiceId: string
+): Promise<{ message?: string }> {
+  const { organizationId } = await requireOrg(orgSlug);
+  const result = await prisma.invoice.updateMany({
+    where: { id: invoiceId, organizationId, status: "DRAFT" },
+    data: { status: "SENT", sentAt: new Date() },
+  });
+  if (result.count === 0) return { message: "Invalid status transition." };
+  revalidatePath(`/${orgSlug}/invoices`);
+  revalidatePath(`/${orgSlug}/invoices/${invoiceId}`);
+  return {};
+}
+
+export async function markInvoicePaid(
+  orgSlug: string,
+  invoiceId: string
+): Promise<{ message?: string }> {
+  const { organizationId } = await requireOrg(orgSlug);
+  const result = await prisma.invoice.updateMany({
+    where: {
+      id: invoiceId,
+      organizationId,
+      status: { in: ["SENT", "OVERDUE"] },
+    },
+    data: { status: "PAID", paidAt: new Date() },
+  });
+  if (result.count === 0) return { message: "Invalid status transition." };
+  revalidatePath(`/${orgSlug}/invoices`);
+  revalidatePath(`/${orgSlug}/invoices/${invoiceId}`);
+  return {};
+}
+
+export async function revertToDraft(
+  orgSlug: string,
+  invoiceId: string
+): Promise<{ message?: string }> {
+  const { organizationId } = await requireOrg(orgSlug);
+  const result = await prisma.invoice.updateMany({
+    where: { id: invoiceId, organizationId, status: "SENT" },
+    data: { status: "DRAFT", sentAt: null },
+  });
+  if (result.count === 0) return { message: "Invalid status transition." };
+  revalidatePath(`/${orgSlug}/invoices`);
+  revalidatePath(`/${orgSlug}/invoices/${invoiceId}`);
   return {};
 }

@@ -11,12 +11,17 @@ export default async function EditInvoicePage({
   params: { orgSlug: string; invoiceId: string };
 }) {
   const { organizationId } = await requireOrg(params.orgSlug);
-  const [invoice, clients] = await Promise.all([
+  const [invoice, clients, projects] = await Promise.all([
     prisma.invoice.findFirst({
       where: { id: params.invoiceId, organizationId },
       include: { items: true },
     }),
     prisma.client.findMany({
+      where: { organizationId },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.project.findMany({
       where: { organizationId },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
@@ -32,17 +37,19 @@ export default async function EditInvoicePage({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-slate-900">Edit invoice {invoice.number}</h1>
-        <Link href={`/${params.orgSlug}/invoices/${invoice.id}`} className="text-sm text-slate-700 hover:underline">
+        <Link href={`/${params.orgSlug}/invoices/${invoice.id}`} className="text-sm text-gray-900 hover:underline">
           Back to invoice
         </Link>
       </div>
       <InvoiceForm
         orgSlug={params.orgSlug}
         clients={clients}
+        projects={projects}
         action={action}
         submitLabel="Save changes"
         initialValues={{
           clientId: invoice.clientId,
+          projectId: invoice.projectId ?? "",
           dueDate: invoice.dueDate.toISOString().slice(0, 10),
           currency: invoice.currency,
           taxRate: Number(invoice.taxRate.toString()),

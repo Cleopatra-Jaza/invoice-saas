@@ -7,7 +7,7 @@ export default function Home() {
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           InvoiceFlow
         </h1>
-        <p className="mt-4 max-w-xl text-base text-slate-600 sm:text-lg">
+        <p className="mt-4 max-w-xl text-base text-gray-700 sm:text-lg">
           Simple invoicing and project management for modern B2B teams.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">

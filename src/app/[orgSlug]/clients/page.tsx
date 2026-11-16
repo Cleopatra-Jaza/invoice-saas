@@ -51,13 +51,13 @@ export default async function ClientsPage({
         </button>
       </form>
       {clients.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
+        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-gray-700">
           No clients found.
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+            <thead className="border-b border-slate-200 bg-slate-50 text-gray-700">
               <tr>
                 <th className="px-4 py-3 font-medium">Name</th>
                 <th className="px-4 py-3 font-medium">Email</th>
@@ -69,8 +69,8 @@ export default async function ClientsPage({
               {clients.map((client) => (
                 <tr key={client.id} className="border-t border-slate-100">
                   <td className="px-4 py-3 text-slate-900">{client.name}</td>
-                  <td className="px-4 py-3 text-slate-700">{client.email}</td>
-                  <td className="px-4 py-3 text-slate-700">{client.company || "—"}</td>
+                  <td className="px-4 py-3 text-gray-900">{client.email}</td>
+                  <td className="px-4 py-3 text-gray-900">{client.company || "—"}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <Link

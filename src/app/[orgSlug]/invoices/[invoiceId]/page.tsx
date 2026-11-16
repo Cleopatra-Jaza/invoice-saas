@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireOrg } from "@/lib/session";
 import { formatMoney } from "@/lib/money";
+import { effectiveStatus, syncOverdueInvoices } from "@/lib/invoice-status";
 import DeleteInvoiceButton from "../DeleteInvoiceButton";
+import InvoiceStatusActions from "../InvoiceStatusActions";
 
 const statusStyles: Record<string, string> = {
-  DRAFT: "bg-slate-100 text-slate-700",
+  DRAFT: "bg-slate-100 text-gray-900",
   SENT: "bg-blue-100 text-blue-700",
   PAID: "bg-green-100 text-green-700",
   OVERDUE: "bg-red-100 text-red-700",
@@ -18,52 +20,67 @@ export default async function InvoiceDetailPage({
   params: { orgSlug: string; invoiceId: string };
 }) {
   const { organizationId } = await requireOrg(params.orgSlug);
+  await syncOverdueInvoices(organizationId);
   const invoice = await prisma.invoice.findFirst({
     where: { id: params.invoiceId, organizationId },
     include: {
       client: true,
+      project: { select: { name: true } },
       items: true,
     },
   });
 
   if (!invoice) notFound();
+  const status = effectiveStatus(invoice.status, invoice.dueDate);
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Invoice {invoice.number}</h1>
-          <div className="mt-1">
-            <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusStyles[invoice.status] || ""}`}>
-              {invoice.status}
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusStyles[status] || ""}`}>
+              {status}
             </span>
+            {invoice.sentAt ? (
+              <span className="text-xs text-gray-600">Sent: {invoice.sentAt.toISOString().slice(0, 10)}</span>
+            ) : null}
+            {invoice.paidAt ? (
+              <span className="text-xs text-gray-600">Paid: {invoice.paidAt.toISOString().slice(0, 10)}</span>
+            ) : null}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href={`/${params.orgSlug}/invoices`} className="text-sm text-slate-700 hover:underline">
-            Back
-          </Link>
-          {invoice.status === "DRAFT" ? (
-            <>
-              <Link
-                href={`/${params.orgSlug}/invoices/${invoice.id}/edit`}
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-              >
-                Edit
-              </Link>
-              <DeleteInvoiceButton orgSlug={params.orgSlug} invoiceId={invoice.id} />
-            </>
-          ) : null}
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-2">
+            <Link href={`/${params.orgSlug}/invoices`} className="text-sm text-gray-900 hover:underline">
+              Back
+            </Link>
+            {invoice.status === "DRAFT" ? (
+              <>
+                <Link
+                  href={`/${params.orgSlug}/invoices/${invoice.id}/edit`}
+                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                >
+                  Edit
+                </Link>
+                <DeleteInvoiceButton orgSlug={params.orgSlug} invoiceId={invoice.id} />
+              </>
+            ) : null}
+          </div>
+          <InvoiceStatusActions orgSlug={params.orgSlug} invoiceId={invoice.id} status={status} />
         </div>
       </div>
 
       <div className="grid gap-4 rounded-lg border border-slate-200 bg-white p-6 sm:grid-cols-2">
         <div>
-          <h2 className="text-sm font-medium text-slate-500">Client</h2>
+          <h2 className="text-sm font-medium text-gray-700">Client</h2>
           <p className="mt-1 text-slate-900">{invoice.client.name}</p>
-          <p className="text-sm text-slate-700">{invoice.client.email}</p>
+          <p className="text-sm text-gray-900">{invoice.client.email}</p>
+          {invoice.project ? (
+            <p className="mt-2 text-sm text-gray-900"><span className="font-medium">Project:</span> {invoice.project.name}</p>
+          ) : null}
         </div>
-        <div className="text-sm text-slate-700">
+        <div className="text-sm text-gray-900">
           <p><span className="font-medium">Issue date:</span> {invoice.issueDate.toISOString().slice(0, 10)}</p>
           <p><span className="font-medium">Due date:</span> {invoice.dueDate.toISOString().slice(0, 10)}</p>
           <p><span className="font-medium">Currency:</span> {invoice.currency}</p>
@@ -73,7 +90,7 @@ export default async function InvoiceDetailPage({
 
       <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
         <table className="min-w-full text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+          <thead className="border-b border-slate-200 bg-slate-50 text-gray-700">
             <tr>
               <th className="px-4 py-3 font-medium">Description</th>
               <th className="px-4 py-3 font-medium">Qty</th>
@@ -85,9 +102,9 @@ export default async function InvoiceDetailPage({
             {invoice.items.map((item) => (
               <tr key={item.id} className="border-t border-slate-100">
                 <td className="px-4 py-3 text-slate-900">{item.description}</td>
-                <td className="px-4 py-3 text-slate-700">{item.quantity.toString()}</td>
-                <td className="px-4 py-3 text-slate-700">{formatMoney(item.unitPrice.toString(), invoice.currency)}</td>
-                <td className="px-4 py-3 text-slate-700">{formatMoney(item.amount.toString(), invoice.currency)}</td>
+                <td className="px-4 py-3 text-gray-900">{item.quantity.toString()}</td>
+                <td className="px-4 py-3 text-gray-900">{formatMoney(item.unitPrice.toString(), invoice.currency)}</td>
+                <td className="px-4 py-3 text-gray-900">{formatMoney(item.amount.toString(), invoice.currency)}</td>
               </tr>
             ))}
           </tbody>
@@ -103,7 +120,7 @@ export default async function InvoiceDetailPage({
       {invoice.notes ? (
         <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm">
           <h2 className="font-medium text-slate-900">Notes</h2>
-          <p className="mt-1 whitespace-pre-wrap text-slate-700">{invoice.notes}</p>
+          <p className="mt-1 whitespace-pre-wrap text-gray-900">{invoice.notes}</p>
         </div>
       ) : null}
     </div>

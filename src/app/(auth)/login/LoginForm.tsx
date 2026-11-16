@@ -33,7 +33,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-700">Email</label>
+        <label className="block text-sm font-medium text-gray-800">Email</label>
         <input
           type="email"
           required
@@ -43,7 +43,7 @@ export default function LoginForm() {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">Password</label>
+        <label className="block text-sm font-medium text-gray-800">Password</label>
         <input
           type="password"
           required
@@ -60,7 +60,7 @@ export default function LoginForm() {
       >
         {loading ? "Signing in..." : "Sign in"}
       </button>
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-gray-700">
         No account?{" "}
         <Link href="/signup" className="font-medium text-slate-900 underline">
           Sign up

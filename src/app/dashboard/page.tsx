@@ -15,7 +15,7 @@ export default async function DashboardRedirectPage() {
       <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
         <div className="rounded-lg border border-slate-200 bg-white p-6 text-center">
           <h1 className="text-lg font-semibold text-slate-900">No organization found</h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-gray-700">
             Your account is not a member of any organization.
           </p>
         </div>

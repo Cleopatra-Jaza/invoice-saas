@@ -14,17 +14,17 @@ export default async function OrgDashboardPage({
     <div className="space-y-4">
       <div className="rounded-lg border border-slate-200 bg-white p-6">
         <h1 className="text-2xl font-semibold text-slate-900">Welcome {user?.name ?? "there"}</h1>
-        <dl className="mt-4 grid gap-3 text-sm text-slate-700 sm:grid-cols-3">
+        <dl className="mt-4 grid gap-3 text-sm text-gray-900 sm:grid-cols-3">
           <div>
-            <dt className="font-medium text-slate-500">Organization</dt>
+            <dt className="font-medium text-gray-700">Organization</dt>
             <dd>{organization.name}</dd>
           </div>
           <div>
-            <dt className="font-medium text-slate-500">Role</dt>
+            <dt className="font-medium text-gray-700">Role</dt>
             <dd>{role}</dd>
           </div>
           <div>
-            <dt className="font-medium text-slate-500">Plan</dt>
+            <dt className="font-medium text-gray-700">Plan</dt>
             <dd>{organization.plan}</dd>
           </div>
         </dl>
@@ -32,7 +32,7 @@ export default async function OrgDashboardPage({
           <SignOutButton />
         </div>
       </div>
-      <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600">
+      <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-gray-700">
         Dashboard placeholder.
       </div>
     </div>

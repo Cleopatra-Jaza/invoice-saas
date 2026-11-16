@@ -7,9 +7,11 @@ import { calcTotals, formatMoney } from "@/lib/money";
 import type { InvoiceFormState } from "./actions";
 
 type ClientOption = { id: string; name: string };
+type ProjectOption = { id: string; name: string };
 type Item = { description: string; quantity: number; unitPrice: number };
 type Initial = {
   clientId: string;
+  projectId: string;
   dueDate: string;
   currency: string;
   taxRate: number;
@@ -35,18 +37,21 @@ function SubmitButton({ label }: { label: string }) {
 export default function InvoiceForm({
   orgSlug,
   clients,
+  projects,
   action,
   initialValues,
   submitLabel,
 }: {
   orgSlug: string;
   clients: ClientOption[];
+  projects: ProjectOption[];
   action: (state: InvoiceFormState, formData: FormData) => Promise<InvoiceFormState>;
   initialValues?: Partial<Initial>;
   submitLabel: string;
 }) {
   const [state, formAction] = useFormState(action, initialState);
   const [clientId, setClientId] = useState(initialValues?.clientId ?? clients[0]?.id ?? "");
+  const [projectId, setProjectId] = useState(initialValues?.projectId ?? "");
   const [dueDate, setDueDate] = useState(initialValues?.dueDate ?? "");
   const [currency, setCurrency] = useState(initialValues?.currency ?? "GBP");
   const [taxRate, setTaxRate] = useState<number>(initialValues?.taxRate ?? 20);
@@ -61,7 +66,7 @@ export default function InvoiceForm({
 
   if (clients.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-700">
+      <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-gray-900">
         No clients yet.{" "}
         <Link href={`/${orgSlug}/clients/new`} className="font-medium text-slate-900 underline">
           Create a client first
@@ -83,6 +88,7 @@ export default function InvoiceForm({
 
   const payload = JSON.stringify({
     clientId,
+    projectId,
     dueDate,
     currency,
     taxRate: Number(taxRate),
@@ -97,7 +103,7 @@ export default function InvoiceForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-slate-700">Client *</label>
+          <label className="block text-sm font-medium text-gray-800">Client *</label>
           <select
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
@@ -115,7 +121,25 @@ export default function InvoiceForm({
           ) : null}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Due date *</label>
+          <label className="block text-sm font-medium text-gray-800">Project (optional)</label>
+          <select
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="">No project</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          {state.errors?.projectId ? (
+            <p className="mt-1 text-sm text-red-600">{state.errors.projectId[0]}</p>
+          ) : null}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-800">Due date *</label>
           <input
             type="date"
             value={dueDate}
@@ -128,7 +152,7 @@ export default function InvoiceForm({
           ) : null}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Currency</label>
+          <label className="block text-sm font-medium text-gray-800">Currency</label>
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value)}
@@ -140,7 +164,7 @@ export default function InvoiceForm({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">VAT %</label>
+          <label className="block text-sm font-medium text-gray-800">VAT %</label>
           <input
             type="number"
             min={0}
@@ -158,7 +182,7 @@ export default function InvoiceForm({
 
       <div>
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-slate-700">Line items</h2>
+          <h2 className="text-sm font-medium text-gray-800">Line items</h2>
           <button type="button" onClick={addItem} className="text-sm text-slate-900 underline">
             Add row
           </button>
@@ -172,7 +196,7 @@ export default function InvoiceForm({
             return (
               <div key={idx} className="grid gap-2 rounded-md border border-slate-200 p-3 sm:grid-cols-12">
                 <div className="sm:col-span-5">
-                  <label className="block text-xs text-slate-600">Description</label>
+                  <label className="block text-xs text-gray-600">Description</label>
                   <input
                     value={item.description}
                     onChange={(e) => updateItem(idx, { description: e.target.value })}
@@ -181,7 +205,7 @@ export default function InvoiceForm({
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs text-slate-600">Qty</label>
+                  <label className="block text-xs text-gray-600">Qty</label>
                   <input
                     type="number"
                     min={0}
@@ -193,7 +217,7 @@ export default function InvoiceForm({
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs text-slate-600">Unit price</label>
+                  <label className="block text-xs text-gray-600">Unit price</label>
                   <input
                     type="number"
                     min={0}
@@ -205,7 +229,7 @@ export default function InvoiceForm({
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs text-slate-600">Amount</label>
+                  <label className="block text-xs text-gray-600">Amount</label>
                   <div className="mt-1 rounded-md bg-slate-50 px-2 py-1.5 text-sm text-slate-800">
                     {formatMoney(line, currency)}
                   </div>
@@ -227,7 +251,7 @@ export default function InvoiceForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700">Notes</label>
+        <label className="block text-sm font-medium text-gray-800">Notes</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
