@@ -6,6 +6,7 @@ import { formatMoney } from "@/lib/money";
 import { effectiveStatus, syncOverdueInvoices } from "@/lib/invoice-status";
 import DeleteInvoiceButton from "../DeleteInvoiceButton";
 import InvoiceStatusActions from "../InvoiceStatusActions";
+import CopyPublicLink from "./CopyPublicLink";
 
 const statusStyles: Record<string, string> = {
   DRAFT: "bg-slate-100 text-gray-900",
@@ -32,6 +33,8 @@ export default async function InvoiceDetailPage({
 
   if (!invoice) notFound();
   const status = effectiveStatus(invoice.status, invoice.dueDate);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const publicUrl = `${appUrl}/invoice/${invoice.publicToken}`;
 
   return (
     <div className="space-y-4">
@@ -51,7 +54,13 @@ export default async function InvoiceDetailPage({
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={`/api/invoices/${invoice.id}/pdf?org=${params.orgSlug}`}
+              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-gray-900 hover:bg-slate-50"
+            >
+              Download PDF
+            </a>
             <Link href={`/${params.orgSlug}/invoices`} className="text-sm text-gray-900 hover:underline">
               Back
             </Link>
@@ -70,6 +79,8 @@ export default async function InvoiceDetailPage({
           <InvoiceStatusActions orgSlug={params.orgSlug} invoiceId={invoice.id} status={status} />
         </div>
       </div>
+
+      {invoice.status !== "DRAFT" ? <CopyPublicLink url={publicUrl} /> : null}
 
       <div className="grid gap-4 rounded-lg border border-slate-200 bg-white p-6 sm:grid-cols-2">
         <div>

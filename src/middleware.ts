@@ -24,5 +24,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/dashboard", "/:orgSlug((?!login|signup|api|_next|favicon.ico).*)"],
+  matcher: ["/dashboard", "/:orgSlug((?!login|signup|invoice|api|_next|favicon.ico).*)"],
 };
