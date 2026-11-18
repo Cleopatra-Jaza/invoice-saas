@@ -72,7 +72,8 @@ export default async function InvoicesPage({
         />
         <select
           name="status"
-          defaultValue={statusFilter ?? ""}
+          defaultValue={searchParams.status ?? ""}
+          autoComplete="off"
           className="rounded-md border border-slate-300 px-3 py-2 text-sm"
         >
           <option value="">All statuses</option>
@@ -81,7 +82,7 @@ export default async function InvoicesPage({
           <option value="PAID">PAID</option>
           <option value="OVERDUE">OVERDUE</option>
         </select>
-        <button className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50">
+        <button className="rounded-md border border-slate-300 px-3 py-2 text-sm text-gray-900 hover:bg-slate-50">
           Filter
         </button>
       </form>

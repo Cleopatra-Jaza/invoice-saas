@@ -46,7 +46,7 @@ export default async function ClientsPage({
           placeholder="Search by name or email"
           className="w-full max-w-sm rounded-md border border-slate-300 px-3 py-2 text-sm"
         />
-        <button className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50">
+        <button className="rounded-md border border-slate-300 px-3 py-2 text-sm text-gray-900 hover:bg-slate-50">
           Search
         </button>
       </form>

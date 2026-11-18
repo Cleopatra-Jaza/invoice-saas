@@ -48,6 +48,24 @@ export async function POST(req: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (session.metadata?.kind === "invoice_payment") {
+          if (
+            session.mode === "payment" &&
+            session.payment_status === "paid" &&
+            session.metadata.invoiceId &&
+            session.metadata.organizationId
+          ) {
+            await prisma.invoice.updateMany({
+              where: {
+                id: session.metadata.invoiceId,
+                organizationId: session.metadata.organizationId,
+                status: { in: ["SENT", "OVERDUE"] },
+              },
+              data: { status: "PAID", paidAt: new Date() },
+            });
+          }
+          break;
+        }
         if (session.mode !== "subscription") break;
         const organizationId = session.metadata?.organizationId;
         const subscriptionId =
