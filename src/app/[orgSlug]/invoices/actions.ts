@@ -3,10 +3,15 @@
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import React from "react";
+import { renderToBuffer } from "@react-pdf/renderer";
 import { prisma } from "@/lib/prisma";
 import { requireOrg } from "@/lib/session";
-import { calcTotals } from "@/lib/money";
+import { calcTotals, formatMoney } from "@/lib/money";
 import { invoiceSchema, type InvoiceInput } from "@/lib/validations/invoice";
+import { getInvoiceForOrg } from "@/lib/invoice-data";
+import { InvoicePdf } from "@/lib/pdf/InvoicePdf";
+import { sendInvoiceEmail } from "@/lib/email";
 
 export type InvoiceFormState = {
   errors?: Record<string, string[]>;
@@ -271,4 +276,51 @@ export async function revertToDraft(
   revalidatePath(`/${orgSlug}/invoices`);
   revalidatePath(`/${orgSlug}/invoices/${invoiceId}`);
   return {};
+}
+
+export async function emailInvoice(
+  orgSlug: string,
+  invoiceId: string
+): Promise<{ success?: true; error?: string }> {
+  const { organizationId } = await requireOrg(orgSlug);
+  const invoice = await getInvoiceForOrg(organizationId, invoiceId);
+  if (!invoice) return { error: "Invoice not found." };
+  if (invoice.rawStatus === "PAID") return { error: "Invoice is already paid" };
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const publicUrl = `${appUrl}/invoice/${invoice.publicToken}`;
+
+  try {
+    const document = React.createElement(InvoicePdf, { invoice });
+    const pdfBuffer = await renderToBuffer(
+      document as unknown as Parameters<typeof renderToBuffer>[0]
+    );
+
+    await sendInvoiceEmail({
+      to: invoice.client.email,
+      organizationName: invoice.organization.name,
+      clientName: invoice.client.name,
+      invoiceNumber: invoice.number,
+      totalFormatted: formatMoney(invoice.total, invoice.currency),
+      dueDate: invoice.dueDate.slice(0, 10),
+      publicUrl,
+      pdfBuffer,
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Email is not configured") {
+      return { error: "Email is not configured" };
+    }
+    return { error: "Failed to send email." };
+  }
+
+  if (invoice.rawStatus === "DRAFT") {
+    await prisma.invoice.updateMany({
+      where: { id: invoiceId, organizationId, status: "DRAFT" },
+      data: { status: "SENT", sentAt: new Date() },
+    });
+  }
+
+  revalidatePath(`/${orgSlug}/invoices`);
+  revalidatePath(`/${orgSlug}/invoices/${invoiceId}`);
+  return { success: true };
 }

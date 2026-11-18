@@ -7,6 +7,7 @@ import { effectiveStatus, syncOverdueInvoices } from "@/lib/invoice-status";
 import DeleteInvoiceButton from "../DeleteInvoiceButton";
 import InvoiceStatusActions from "../InvoiceStatusActions";
 import CopyPublicLink from "./CopyPublicLink";
+import EmailInvoiceButton from "./EmailInvoiceButton";
 
 const statusStyles: Record<string, string> = {
   DRAFT: "bg-slate-100 text-gray-900",
@@ -79,6 +80,12 @@ export default async function InvoiceDetailPage({
           <InvoiceStatusActions orgSlug={params.orgSlug} invoiceId={invoice.id} status={status} />
         </div>
       </div>
+
+      <EmailInvoiceButton
+        orgSlug={params.orgSlug}
+        invoiceId={invoice.id}
+        clientEmail={invoice.client.email}
+      />
 
       {invoice.status !== "DRAFT" ? <CopyPublicLink url={publicUrl} /> : null}
 

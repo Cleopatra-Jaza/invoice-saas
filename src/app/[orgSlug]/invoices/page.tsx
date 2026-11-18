@@ -87,6 +87,7 @@ export default async function InvoicesPage({
                 <th className="px-4 py-3 font-medium">Due date</th>
                 <th className="px-4 py-3 font-medium">Total</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">View</th>
               </tr>
             </thead>
             <tbody>
@@ -97,7 +98,7 @@ export default async function InvoicesPage({
                     <td className="px-4 py-3">
                       <Link
                         href={`/${params.orgSlug}/invoices/${inv.id}`}
-                        className="font-medium text-slate-900 hover:underline"
+                        className="font-medium text-blue-700 underline hover:text-blue-800"
                       >
                         {inv.number}
                       </Link>
@@ -112,6 +113,14 @@ export default async function InvoicesPage({
                       <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${statusStyles[status] || ""}`}>
                         {status}
                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/${params.orgSlug}/invoices/${inv.id}`}
+                        className="text-sm text-blue-700 underline hover:text-blue-800"
+                      >
+                        View
+                      </Link>
                     </td>
                   </tr>
                 );
