@@ -280,6 +280,7 @@ export async function markInvoicePaid(
   if (result.count === 0) return { message: "Invalid status transition." };
   revalidatePath(`/${orgSlug}/invoices`);
   revalidatePath(`/${orgSlug}/invoices/${invoiceId}`);
+  revalidatePath(`/${orgSlug}/dashboard`);
   return {};
 }
 
