@@ -21,7 +21,7 @@ export default async function InvoiceDetailPage({
 }: {
   params: { orgSlug: string; invoiceId: string };
 }) {
-  const { organizationId } = await requireOrg(params.orgSlug);
+  const { organizationId, role } = await requireOrg(params.orgSlug);
   await syncOverdueInvoices(organizationId);
   const invoice = await prisma.invoice.findFirst({
     where: { id: params.invoiceId, organizationId },
@@ -73,7 +73,9 @@ export default async function InvoiceDetailPage({
                 >
                   Edit
                 </Link>
-                <DeleteInvoiceButton orgSlug={params.orgSlug} invoiceId={invoice.id} />
+                {role === "OWNER" ? (
+                  <DeleteInvoiceButton orgSlug={params.orgSlug} invoiceId={invoice.id} />
+                ) : null}
               </>
             ) : null}
           </div>

@@ -10,7 +10,7 @@ export default async function ClientsPage({
   params: { orgSlug: string };
   searchParams: { q?: string };
 }) {
-  const { organizationId } = await requireOrg(params.orgSlug);
+  const { organizationId, role } = await requireOrg(params.orgSlug);
   const q = (searchParams.q || "").trim();
 
   const clients = await prisma.client.findMany({
@@ -79,7 +79,9 @@ export default async function ClientsPage({
                       >
                         Edit
                       </Link>
-                      <DeleteClientButton orgSlug={params.orgSlug} clientId={client.id} />
+                      {role === "OWNER" ? (
+                        <DeleteClientButton orgSlug={params.orgSlug} clientId={client.id} />
+                      ) : null}
                     </div>
                   </td>
                 </tr>

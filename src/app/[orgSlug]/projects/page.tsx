@@ -10,7 +10,7 @@ const statusStyles: Record<string, string> = {
 };
 
 export default async function ProjectsPage({ params }: { params: { orgSlug: string } }) {
-  const { organizationId } = await requireOrg(params.orgSlug);
+  const { organizationId, role } = await requireOrg(params.orgSlug);
   const projects = await prisma.project.findMany({
     where: { organizationId },
     include: { client: { select: { name: true } } },
@@ -58,7 +58,9 @@ export default async function ProjectsPage({ params }: { params: { orgSlug: stri
                       <Link href={`/${params.orgSlug}/projects/${p.id}/edit`} className="text-sm text-slate-900 hover:underline">
                         Edit
                       </Link>
-                      <DeleteProjectButton orgSlug={params.orgSlug} projectId={p.id} />
+                      {role === "OWNER" ? (
+                        <DeleteProjectButton orgSlug={params.orgSlug} projectId={p.id} />
+                      ) : null}
                     </div>
                   </td>
                 </tr>

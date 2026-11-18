@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireOrg } from "@/lib/session";
+import { requireOwner } from "@/lib/permissions";
 import { projectSchema } from "@/lib/validations/project";
 
 export type ProjectFormState = {
@@ -86,7 +87,11 @@ export async function deleteProject(
   orgSlug: string,
   projectId: string
 ): Promise<{ message?: string }> {
-  const { organizationId } = await requireOrg(orgSlug);
+  const ctx = await requireOwner(orgSlug);
+  if (!ctx.isOwner) {
+    return { message: "Only the owner can delete projects." };
+  }
+  const { organizationId } = ctx;
   const result = await prisma.project.deleteMany({
     where: { id: projectId, organizationId },
   });

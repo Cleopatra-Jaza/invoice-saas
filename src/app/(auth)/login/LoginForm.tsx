@@ -5,12 +5,18 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export default function LoginForm() {
+function safeCallbackUrl(url?: string) {
+  if (url && url.startsWith("/") && !url.startsWith("//")) return url;
+  return "/dashboard";
+}
+
+export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const target = safeCallbackUrl(callbackUrl);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -26,7 +32,7 @@ export default function LoginForm() {
       setError("Invalid email or password.");
       return;
     }
-    router.push("/dashboard");
+    router.push(target);
     router.refresh();
   }
 

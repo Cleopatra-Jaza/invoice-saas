@@ -13,7 +13,7 @@ export default async function OrgLayout({
   children: ReactNode;
   params: { orgSlug: string };
 }) {
-  const { organization } = await requireOrg(params.orgSlug);
+  const { organization, role } = await requireOrg(params.orgSlug);
   const session = await getServerSession(authOptions);
   const organizations = session?.user?.id ? await getUserOrganizations(session.user.id) : [];
 
@@ -33,7 +33,7 @@ export default async function OrgLayout({
       </header>
       <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6">
         <aside className="hidden w-48 shrink-0 md:block">
-          <SidebarNav orgSlug={params.orgSlug} />
+          <SidebarNav orgSlug={params.orgSlug} role={role} />
         </aside>
         <main className="min-w-0 flex-1">{children}</main>
       </div>

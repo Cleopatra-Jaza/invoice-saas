@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireOrg } from "@/lib/session";
+import { requireOwner } from "@/lib/permissions";
 import { clientSchema } from "@/lib/validations/client";
 
 export type ClientFormState = {
@@ -74,7 +75,11 @@ export async function deleteClient(
   orgSlug: string,
   clientId: string
 ): Promise<{ message?: string }> {
-  const { organizationId } = await requireOrg(orgSlug);
+  const ctx = await requireOwner(orgSlug);
+  if (!ctx.isOwner) {
+    return { message: "Only the owner can delete clients." };
+  }
+  const { organizationId } = ctx;
   try {
     const result = await prisma.client.deleteMany({
       where: { id: clientId, organizationId },

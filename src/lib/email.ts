@@ -88,3 +88,36 @@ export async function sendInvoiceEmail({
     ],
   });
 }
+
+export async function sendInviteEmail({
+  to,
+  organizationName,
+  inviteUrl,
+}: {
+  to: string;
+  organizationName: string;
+  inviteUrl: string;
+}) {
+  const { transporter, from } = getTransporter();
+  const subject = `Invitation to join ${organizationName}`;
+  const text = [
+    `You have been invited to join ${organizationName} on InvoiceFlow.`,
+    "",
+    `Accept your invitation: ${inviteUrl}`,
+    "",
+    "This invitation expires in 7 days.",
+  ].join("\n");
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+      <p>You have been invited to join <strong>${organizationName}</strong> on InvoiceFlow.</p>
+      <p>
+        <a href="${inviteUrl}" style="display:inline-block;padding:10px 16px;background:#111827;color:#ffffff;text-decoration:none;border-radius:6px;">
+          Accept invitation
+        </a>
+      </p>
+      <p style="font-size:12px;color:#374151;">If the button does not work, open this link:<br/>${inviteUrl}</p>
+      <p style="font-size:12px;color:#374151;">This invitation expires in 7 days.</p>
+    </div>
+  `;
+  await transporter.sendMail({ from, to, subject, text, html });
+}

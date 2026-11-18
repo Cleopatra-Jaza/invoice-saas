@@ -3,14 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function SidebarNav({ orgSlug }: { orgSlug: string }) {
+export default function SidebarNav({ orgSlug, role }: { orgSlug: string; role: "OWNER" | "MEMBER" }) {
   const pathname = usePathname();
   const items = [
     { href: `/${orgSlug}/dashboard`, label: "Dashboard" },
     { href: `/${orgSlug}/clients`, label: "Clients" },
     { href: `/${orgSlug}/invoices`, label: "Invoices" },
     { href: `/${orgSlug}/projects`, label: "Projects" },
-    { href: `/${orgSlug}/billing`, label: "Billing" },
+    ...(role === "OWNER"
+      ? [
+          { href: `/${orgSlug}/billing`, label: "Billing" },
+          { href: `/${orgSlug}/team`, label: "Team" },
+        ]
+      : []),
   ];
 
   return (

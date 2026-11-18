@@ -11,6 +11,16 @@ export default async function BillingPage({
 }) {
   const { organization, role } = await requireOrg(params.orgSlug);
   const isOwner = role === "OWNER";
+
+  if (!isOwner) {
+    return (
+      <div className="rounded-lg border border-slate-200 bg-white p-6">
+        <h1 className="text-xl font-semibold text-slate-900">Billing</h1>
+        <p className="mt-2 text-sm text-gray-700">Only the owner can manage billing.</p>
+      </div>
+    );
+  }
+
   const upgradeAction = startCheckout.bind(null, params.orgSlug);
   const portalAction = openBillingPortal.bind(null, params.orgSlug);
 
@@ -72,14 +82,10 @@ export default async function BillingPage({
       </div>
 
       <div className="rounded-lg border border-slate-200 bg-white p-6">
-        {isOwner ? (
-          organization.plan === "FREE" ? (
-            <BillingActions action={upgradeAction} label="Upgrade to PRO" />
-          ) : (
-            <BillingActions action={portalAction} label="Manage subscription" />
-          )
+        {organization.plan === "FREE" ? (
+          <BillingActions action={upgradeAction} label="Upgrade to PRO" />
         ) : (
-          <p className="text-sm text-gray-700">Only the owner can manage billing.</p>
+          <BillingActions action={portalAction} label="Manage subscription" />
         )}
       </div>
     </div>

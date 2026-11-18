@@ -7,6 +7,7 @@ import React from "react";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { prisma } from "@/lib/prisma";
 import { requireOrg } from "@/lib/session";
+import { requireOwner } from "@/lib/permissions";
 import { calcTotals, formatMoney } from "@/lib/money";
 import { invoiceSchema, type InvoiceInput } from "@/lib/validations/invoice";
 import { getInvoiceForOrg } from "@/lib/invoice-data";
@@ -229,7 +230,11 @@ export async function deleteInvoice(
   orgSlug: string,
   invoiceId: string
 ): Promise<{ message?: string }> {
-  const { organizationId } = await requireOrg(orgSlug);
+  const ctx = await requireOwner(orgSlug);
+  if (!ctx.isOwner) {
+    return { message: "Only the owner can delete invoices." };
+  }
+  const { organizationId } = ctx;
   const existing = await prisma.invoice.findFirst({
     where: { id: invoiceId, organizationId },
     select: { status: true },
