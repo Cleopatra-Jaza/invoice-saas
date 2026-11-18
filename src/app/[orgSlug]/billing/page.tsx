@@ -31,7 +31,9 @@ export default async function BillingPage({
 
       {searchParams.success ? (
         <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-800">
-          Payment received, your plan will update in a few seconds.
+          {organization.plan === "FREE"
+            ? "Updating your plan... refresh in a few seconds."
+            : "Payment received, your plan will update in a few seconds."}
         </div>
       ) : null}
       {searchParams.canceled ? (

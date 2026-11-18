@@ -12,10 +12,12 @@ import { invoiceSchema, type InvoiceInput } from "@/lib/validations/invoice";
 import { getInvoiceForOrg } from "@/lib/invoice-data";
 import { InvoicePdf } from "@/lib/pdf/InvoicePdf";
 import { sendInvoiceEmail } from "@/lib/email";
+import { canCreateInvoice } from "@/lib/plan";
 
 export type InvoiceFormState = {
   errors?: Record<string, string[]>;
   message?: string;
+  error?: string;
 };
 
 function parseNumber(invoiceNumber: string): number {
@@ -60,6 +62,19 @@ export async function createInvoice(
   formData: FormData
 ): Promise<InvoiceFormState> {
   const { organizationId } = await requireOrg(orgSlug);
+  const org = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: { plan: true },
+  });
+  if (!org) return { message: "Organization not found." };
+  const limit = await canCreateInvoice(organizationId, org.plan);
+  if (!limit.allowed) {
+    return {
+      error: "LIMIT_REACHED",
+      message: "Free plan includes 5 invoices per month. Upgrade to PRO for unlimited invoices.",
+    };
+  }
+
   const payload = parsePayload(formData);
   if (!payload) return { message: "Invalid form data." };
 

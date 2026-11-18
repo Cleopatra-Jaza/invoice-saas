@@ -4,6 +4,7 @@ import { requireOrg } from "@/lib/session";
 import { formatMoney } from "@/lib/money";
 import { effectiveStatus, syncOverdueInvoices } from "@/lib/invoice-status";
 import type { InvoiceStatus } from "@prisma/client";
+import { getMonthlyInvoiceCount, FREE_INVOICE_LIMIT } from "@/lib/plan";
 
 const statusStyles: Record<string, string> = {
   DRAFT: "bg-slate-100 text-gray-900",
@@ -21,7 +22,7 @@ export default async function InvoicesPage({
   params: { orgSlug: string };
   searchParams: { q?: string; status?: string };
 }) {
-  const { organizationId } = await requireOrg(params.orgSlug);
+  const { organizationId, organization } = await requireOrg(params.orgSlug);
   await syncOverdueInvoices(organizationId);
   const q = (searchParams.q || "").trim();
   const statusParam = (searchParams.status || "").trim();
@@ -39,10 +40,22 @@ export default async function InvoicesPage({
     orderBy: { createdAt: "desc" },
   });
 
+  const monthlyUsed =
+    organization.plan === "FREE"
+      ? await getMonthlyInvoiceCount(organizationId)
+      : 0;
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900">Invoices</h1>
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">Invoices</h1>
+          <p className="mt-1 text-sm text-gray-700">
+            {organization.plan === "PRO"
+              ? "Unlimited"
+              : `${monthlyUsed}/${FREE_INVOICE_LIMIT} invoices this month`}
+          </p>
+        </div>
         <Link
           href={`/${params.orgSlug}/invoices/new`}
           className="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
