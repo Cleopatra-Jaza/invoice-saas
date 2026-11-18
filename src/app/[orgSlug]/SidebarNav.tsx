@@ -10,6 +10,7 @@ export default function SidebarNav({ orgSlug }: { orgSlug: string }) {
     { href: `/${orgSlug}/clients`, label: "Clients" },
     { href: `/${orgSlug}/invoices`, label: "Invoices" },
     { href: `/${orgSlug}/projects`, label: "Projects" },
+    { href: `/${orgSlug}/billing`, label: "Billing" },
   ];
 
   return (
