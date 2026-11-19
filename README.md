@@ -17,7 +17,7 @@
 | --- | --- |
 | `demo@invoiceflow.dev` | `Demo12345!` |
 
-The demo workspace is **seeded on demand** and is a `PRO` organization, so it has no invoice limit. Sign in from `/login` using the **Try the demo** button (enabled when `NEXT_PUBLIC_DEMO_ENABLED=true`) or the credentials above.
+The demo workspace is **pre-seeded** and is a `PRO` organization, so it has no invoice limit. Sign in from `/login` using the **Try the demo** button (enabled when `NEXT_PUBLIC_DEMO_ENABLED=true`) or the credentials above.
 
 ---
 
