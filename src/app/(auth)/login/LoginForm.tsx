@@ -16,24 +16,47 @@ export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const target = safeCallbackUrl(callbackUrl);
+  const demoEnabled = process.env.NEXT_PUBLIC_DEMO_ENABLED === "true";
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
+  async function doSignIn(signInEmail: string, signInPassword: string) {
     setError(null);
-    setLoading(true);
     const res = await signIn("credentials", {
-      email: email.trim().toLowerCase(),
-      password,
+      email: signInEmail.trim().toLowerCase(),
+      password: signInPassword,
       redirect: false,
     });
-    setLoading(false);
     if (!res || res.error) {
       setError("Invalid email or password.");
-      return;
+      return false;
     }
     router.push(target);
     router.refresh();
+    return true;
+  }
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await doSignIn(email, password);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function tryDemo() {
+    const demoEmail = "demo@invoiceflow.dev";
+    const demoPassword = "Demo12345!";
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setDemoLoading(true);
+    try {
+      await doSignIn(demoEmail, demoPassword);
+    } finally {
+      setDemoLoading(false);
+    }
   }
 
   return (
@@ -61,11 +84,21 @@ export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || demoLoading}
         className="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
       >
         {loading ? "Signing in..." : "Sign in"}
       </button>
+      {demoEnabled ? (
+        <button
+          type="button"
+          onClick={tryDemo}
+          disabled={loading || demoLoading}
+          className="w-full rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-slate-50 disabled:opacity-60"
+        >
+          {demoLoading ? "Signing in..." : "Try the demo"}
+        </button>
+      ) : null}
       <p className="text-sm text-gray-700">
         No account?{" "}
         <Link href="/signup" className="font-medium text-slate-900 underline">
