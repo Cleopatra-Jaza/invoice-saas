@@ -256,7 +256,7 @@ Copy the printed signing secret into `STRIPE_WEBHOOK_SECRET` and restart the dev
 ## Deployment (Vercel + Neon)
 
 1. **Database.** Create a Neon project and copy both connection strings: the pooled URL (host contains `-pooler`) for `DATABASE_URL`, and the direct URL for `DIRECT_URL`.
-2. **Environment.** Add every variable from the table above to Vercel (Project → Settings → Environment Variables). Set `NEXTAUTH_URL` and `NEXT_PUBLIC_APP_URL` to the production URL, and leave `NEXT_PUBLIC_DEMO_ENABLED` unset unless you want the demo button public.
+2. **Environment.** Add every variable from the table above to Vercel (Project → Settings → Environment Variables). Set `NEXTAUTH_URL` and `NEXT_PUBLIC_APP_URL` to the production URL. Set `NEXT_PUBLIC_DEMO_ENABLED=true` to show the **Try the demo** button (enabled on the live demo).
 3. **Build.** `npm run build` runs `prisma generate && next build`, and `postinstall` regenerates the Prisma client so the build never starts with a stale client.
 4. **Schema.** Apply migrations against the direct URL once per release: `npx prisma migrate deploy`.
 5. **Webhook.** Create a Stripe webhook endpoint pointing at `https://<your-domain>/api/webhooks/stripe`, subscribe to the checkout/subscription/invoice events, and store the endpoint’s signing secret as `STRIPE_WEBHOOK_SECRET`.
