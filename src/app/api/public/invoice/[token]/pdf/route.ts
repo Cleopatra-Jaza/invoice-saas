@@ -5,6 +5,7 @@ import { getInvoiceByToken } from "@/lib/invoice-data";
 import { InvoicePdf } from "@/lib/pdf/InvoicePdf";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: Request,
@@ -16,9 +17,15 @@ export async function GET(
   }
 
   const document = React.createElement(InvoicePdf, { invoice });
-  const buffer = await renderToBuffer(
-    document as unknown as Parameters<typeof renderToBuffer>[0]
-  );
+  let buffer: Buffer;
+  try {
+    buffer = await renderToBuffer(
+      document as unknown as Parameters<typeof renderToBuffer>[0]
+    );
+  } catch (err) {
+    console.error("[pdf]", err instanceof Error ? err.message : String(err));
+    return NextResponse.json({ error: "PDF failed" }, { status: 500 });
+  }
   const body = new Uint8Array(buffer);
   return new NextResponse(body, {
     headers: {

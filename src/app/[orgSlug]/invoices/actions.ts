@@ -331,6 +331,7 @@ export async function emailInvoice(
     if (error instanceof Error && error.message === "Email is not configured") {
       return { error: "Email is not configured" };
     }
+    console.error("[pdf]", error instanceof Error ? error.message : String(error));
     return { error: "Failed to send email." };
   }
 
