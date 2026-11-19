@@ -1,0 +1,11 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750" role="img" aria-label="Team management screenshot placeholder">
+  <rect width="1200" height="750" fill="#f1f5f9"/>
+  <rect x="40" y="40" width="1120" height="670" rx="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+  <circle cx="82" cy="74" r="7" fill="#cbd5e1"/>
+  <circle cx="106" cy="74" r="7" fill="#cbd5e1"/>
+  <circle cx="130" cy="74" r="7" fill="#cbd5e1"/>
+  <line x1="40" y1="104" x2="1160" y2="104" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="600" y="372" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="600" fill="#0f172a">Team management</text>
+  <text x="600" y="420" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="20" fill="#475569">Screenshot placeholder</text>
+  <text x="600" y="456" text-anchor="middle" font-family="Consolas, monospace" font-size="16" fill="#64748b">docs/screenshots/team.svg</text>
+</svg>
