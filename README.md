@@ -279,7 +279,7 @@ Copy the printed signing secret into `STRIPE_WEBHOOK_SECRET` and restart the dev
 
 **Fathima Jaza**
 
-- LinkedIn:https://www.linkedin.com/in/fathima-jaza-298b11298/
+- LinkedIn: https://www.linkedin.com/in/fathima-jaza-298b11298/
 - GitHub: https://github.com/Cleopatra-Jaza
 
 Contributions, issues, and feedback are welcome.
