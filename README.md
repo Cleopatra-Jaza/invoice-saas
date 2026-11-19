@@ -9,7 +9,7 @@
 [![Stripe](https://img.shields.io/badge/Stripe-Checkout%20%2B%20Webhooks-635BFF?logo=stripe&logoColor=white)](https://stripe.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
-**Live demo:** [`https://YOUR-LIVE-URL`](https://YOUR-LIVE-URL)
+**Live demo:** [`https://REAL-VERCEL-URL`](https://REAL-VERCEL-URL)
 
 ### Demo credentials
 
@@ -26,37 +26,45 @@ The demo workspace is **seeded on demand** and is a `PRO` organization, so it ha
 <table>
   <tr>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/dashboard.svg" alt="Dashboard with revenue KPIs and a six-month bar chart" width="100%" />
+      <a href="docs/screenshots/01-landing.png"><img src="docs/screenshots/01-landing.png" alt="InvoiceFlow landing page" width="420" /></a>
+      <sub><b>Landing</b> — product overview with a direct path into the demo.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="docs/screenshots/02-dashboard.png"><img src="docs/screenshots/02-dashboard.png" alt="Dashboard with revenue KPIs and a six-month bar chart" width="420" /></a>
       <sub><b>Dashboard</b> — revenue, pending and overdue KPIs with a six-month revenue chart.</sub>
     </td>
+  </tr>
+  <tr>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/invoices.svg" alt="Invoice list with status badges and filters" width="100%" />
+      <a href="docs/screenshots/03-invoices.png"><img src="docs/screenshots/03-invoices.png" alt="Invoice list with status badges and filters" width="420" /></a>
       <sub><b>Invoices</b> — status filtering, monthly FREE-plan usage, and quick links.</sub>
     </td>
+    <td width="50%" valign="top">
+      <a href="docs/screenshots/04-invoice-detail.png"><img src="docs/screenshots/04-invoice-detail.png" alt="Invoice detail page with line items, VAT and totals" width="420" /></a>
+      <sub><b>Invoice detail</b> — line items, VAT, totals, and status actions.</sub>
+    </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/invoice-editor.svg" alt="Invoice editor with line items, VAT and totals" width="100%" />
-      <sub><b>Invoice editor</b> — line items, VAT, and live totals in GBP, USD, or EUR.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/public-invoice.svg" alt="Public invoice page with a Stripe Pay now button" width="100%" />
+      <a href="docs/screenshots/05-public-invoice.png"><img src="docs/screenshots/05-public-invoice.png" alt="Public invoice page with a Stripe Pay now button" width="420" /></a>
       <sub><b>Public invoice</b> — tokenized client link with a Stripe Checkout “Pay now” button.</sub>
     </td>
+    <td width="50%" valign="top">
+      <a href="docs/screenshots/06-billing.png"><img src="docs/screenshots/06-billing.png" alt="Billing page comparing FREE and PRO plans" width="420" /></a>
+      <sub><b>Billing</b> — FREE vs. PRO plans, Stripe Checkout upgrade, and the billing portal.</sub>
+    </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/billing.svg" alt="Billing page comparing FREE and PRO plans" width="100%" />
-      <sub><b>Billing</b> — FREE vs. PRO plans, Stripe Checkout upgrade, and the billing portal.</sub>
+      <a href="docs/screenshots/07-team.png"><img src="docs/screenshots/07-team.png" alt="Team page listing members and pending invitations" width="420" /></a>
+      <sub><b>Team</b> — members, roles, and email invitations with revoke support.</sub>
     </td>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/team.svg" alt="Team page listing members and pending invitations" width="100%" />
-      <sub><b>Team</b> — members, roles, and email invitations with revoke support.</sub>
+      <a href="docs/screenshots/08-pdf.png"><img src="docs/screenshots/08-pdf.png" alt="Generated invoice PDF document" width="420" /></a>
+      <sub><b>PDF invoice</b> — generated document, downloadable and attached to email.</sub>
     </td>
   </tr>
 </table>
-
-> Replace the placeholder panels in `docs/screenshots/` with real screenshots using the same filenames.
 
 ---
 
@@ -269,9 +277,9 @@ Copy the printed signing secret into `STRIPE_WEBHOOK_SECRET` and restart the dev
 
 ## Author
 
-**YOUR NAME**
+**REAL NAME**
 
-- LinkedIn: [`https://linkedin.com/in/YOUR-LINKEDIN`](https://linkedin.com/in/YOUR-LINKEDIN)
-- GitHub: [`https://github.com/YOUR-GITHUB`](https://github.com/YOUR-GITHUB)
+- LinkedIn: [`https://www.linkedin.com/in/REAL-LINKEDIN`](https://www.linkedin.com/in/REAL-LINKEDIN)
+- GitHub: [`https://github.com/Cleopatra-Jaza`](https://github.com/Cleopatra-Jaza)
 
 Contributions, issues, and feedback are welcome.
