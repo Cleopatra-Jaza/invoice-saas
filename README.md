@@ -277,9 +277,9 @@ Copy the printed signing secret into `STRIPE_WEBHOOK_SECRET` and restart the dev
 
 ## Author
 
-**REAL NAME**
+**Fathima Jaza**
 
-- LinkedIn: [`https://www.linkedin.com/in/REAL-LINKEDIN`](https://www.linkedin.com/in/REAL-LINKEDIN)
-- GitHub: [`https://github.com/Cleopatra-Jaza`](https://github.com/Cleopatra-Jaza)
+- LinkedIn:https://www.linkedin.com/in/fathima-jaza-298b11298/
+- GitHub: https://github.com/Cleopatra-Jaza
 
 Contributions, issues, and feedback are welcome.
