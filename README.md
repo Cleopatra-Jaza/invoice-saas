@@ -9,7 +9,7 @@
 [![Stripe](https://img.shields.io/badge/Stripe-Checkout%20%2B%20Webhooks-635BFF?logo=stripe&logoColor=white)](https://stripe.com)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
-**Live demo:** [`https://REAL-VERCEL-URL`](https://REAL-VERCEL-URL)
+**Live demo:** [`https://invoice-saas-one-lyart.vercel.app/`]
 
 ### Demo credentials
 
